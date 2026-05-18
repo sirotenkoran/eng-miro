@@ -2,7 +2,7 @@
 // Lists available lessons; clicking one drops an App Card on the board
 // with the lessonId and chosen open-mode (modal/panel) encoded into fields.
 
-const ENG_VERSION = '2026-05-18-v10';
+const ENG_VERSION = '2026-05-18-v11';
 console.log('%c[eng panel] version ' + ENG_VERSION + ' loaded at ' + new Date().toISOString(),
             'color:#4262ff;font-weight:bold');
 

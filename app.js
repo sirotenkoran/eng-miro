@@ -2,7 +2,7 @@
 // Click icon → open panel with lesson picker.
 // Click App Card on the board → open the chosen lesson in the chosen mode.
 
-const ENG_VERSION = '2026-05-18-v10';
+const ENG_VERSION = '2026-05-18-v11';
 console.log('%c[eng app] version ' + ENG_VERSION + ' loaded at ' + new Date().toISOString(),
             'color:#4262ff;font-weight:bold');
 
