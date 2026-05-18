@@ -58,16 +58,20 @@ export async function setSettings(next) {
   await setKey(SETTINGS_KEY, next);
 }
 
+// Miro's getInfo() doesn't expose board owner reliably, so we use a
+// "first-to-claim" rule: the first user who opens the panel on a board
+// becomes the teacher. Stored in appData so it survives reloads and is
+// shared across users of the same board.
 export async function isTeacher() {
   const me = await getIdentity();
-  let ownerId = null;
-  try {
-    const b = await getBoard();
-    ownerId = (b && b.owner && (b.owner.id || b.owner)) || b?.ownerId || null;
-  } catch (_) {}
-  if (ownerId && String(me.id) === String(ownerId)) return true;
   const settings = await getSettings();
-  return Array.isArray(settings.teacherIds) && settings.teacherIds.includes(me.id);
+  const list = Array.isArray(settings.teacherIds) ? settings.teacherIds : [];
+  if (list.length === 0) {
+    const next = Object.assign({}, settings, { teacherIds: [me.id] });
+    await setSettings(next);
+    return true;
+  }
+  return list.includes(String(me.id)) || list.includes(me.id);
 }
 
 export function progressKey(lessonId, userId) {

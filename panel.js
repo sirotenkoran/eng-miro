@@ -64,15 +64,12 @@ let initialized = false;
     } catch (e) {
       console.error('[eng panel] isTeacher threw', e);
     }
-    try {
-      const boardInfo = await window.miro.board.getInfo();
-      console.log('[eng panel] miro.board.getInfo() →', boardInfo);
-    } catch (e) {
-      console.error('[eng panel] getInfo threw', e);
+    if (teacher) {
+      renderPicker();
+    } else {
+      emptyMsg.classList.remove('hidden');
+      emptyMsg.textContent = 'Click a lesson card on the board to open the exercise here.';
     }
-    // For the prototype: always show the picker. Role-based gating returns once
-    // we know what fields getInfo() actually exposes for owner detection.
-    renderPicker();
   }
 
   setupTabs();
@@ -105,6 +102,7 @@ async function addLessonCard(lesson, btn) {
     await miro.board.createAppCard({
       title: lesson.title,
       description: lesson.description || '',
+      status: 'connected',
       fields: [{ value: lesson.id, tooltip: 'lessonId' }],
     });
     btn.textContent = 'Added ✓';
