@@ -8,7 +8,8 @@
   ],
   "scopes": [
     "boards:read",
-    "boards:write"
+    "boards:write",
+    "identity:read"
   ],
   "iconUrl": "https://<USER>.github.io/<REPO>/icon.svg",
   "boardPicker": false,

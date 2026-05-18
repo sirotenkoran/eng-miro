@@ -42,7 +42,7 @@ For the end-user setup, no local server and no tunnel are needed.
 2. **Register the app** at <https://developers.miro.com> → *Create new app* in your **Dev team** (free, every Miro account has one). Fill:
    - **App URL** / **SDK URI**: `https://<user>.github.io/eng-miro/app.js`
    - **Redirect URI for OAuth**: `https://<user>.github.io/eng-miro/`
-   - **Permissions / Scopes**: `boards:read`, `boards:write`
+   - **Permissions / Scopes**: `boards:read`, `boards:write`, `identity:read` (identity:read is required by `miro.board.getUserInfo()`, which we use to attribute progress to a student)
    - **Where to install**: enable for **Boards**
 3. **Install on a board.** From the app page, *Install app and get OAuth token* → pick a team/board. The install URL on that page is the one you share with students/teachers for private distribution (no marketplace needed).
 4. **Open the board.** The Eng Lessons icon appears in the right-hand toolbar. Click → panel opens. As the board owner (= teacher), the Lesson tab shows a **picker**: select a lesson → an App Card appears on the board. Students click that card → lesson opens for them.
