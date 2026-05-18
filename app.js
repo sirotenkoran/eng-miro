@@ -13,9 +13,12 @@ async function init() {
 
   console.log('[eng] registering UI event listeners');
 
+  const cb = () => 'v=' + Date.now();
+
   await miro.board.ui.on('icon:click', async () => {
-    console.log('[eng] icon clicked, opening panel');
-    await miro.board.ui.openPanel({ url: 'panel.html' });
+    const url = `panel.html?${cb()}`;
+    console.log('[eng] icon clicked, opening panel', url);
+    await miro.board.ui.openPanel({ url });
   });
 
   await miro.board.ui.on('app_card:open', async (event) => {
@@ -27,8 +30,8 @@ async function init() {
       if (f) lessonId = f.value;
     }
     const url = lessonId
-      ? `panel.html?lesson=${encodeURIComponent(lessonId)}`
-      : 'panel.html';
+      ? `panel.html?lesson=${encodeURIComponent(lessonId)}&${cb()}`
+      : `panel.html?${cb()}`;
     await miro.board.ui.openPanel({ url });
   });
 
