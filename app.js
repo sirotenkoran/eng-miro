@@ -1,17 +1,25 @@
 // Eng Lessons — Miro App entrypoint.
 // Registered as the SDK URI of the app. Runs on every board where the app is installed.
 
+console.log('[eng] app.js loaded at', new Date().toISOString(),
+            '— miro present:', typeof miro,
+            '— miro.board present:', typeof (typeof miro !== 'undefined' && miro.board));
+
 async function init() {
   if (typeof miro === 'undefined' || !miro.board) {
-    console.warn('[eng] miro SDK not available');
+    console.warn('[eng] miro SDK not available — Miro did not inject it. Is this running inside a board?');
     return;
   }
 
+  console.log('[eng] registering UI event listeners');
+
   await miro.board.ui.on('icon:click', async () => {
+    console.log('[eng] icon clicked, opening panel');
     await miro.board.ui.openPanel({ url: 'panel.html' });
   });
 
   await miro.board.ui.on('app_card:open', async (event) => {
+    console.log('[eng] app_card:open', event);
     const card = event && event.appCard;
     let lessonId = null;
     if (card && Array.isArray(card.fields)) {
@@ -23,6 +31,8 @@ async function init() {
       : 'panel.html';
     await miro.board.ui.openPanel({ url });
   });
+
+  console.log('[eng] init complete — icon should now be live');
 }
 
 init().catch(err => console.error('[eng] init failed', err));
