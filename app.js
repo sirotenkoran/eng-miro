@@ -2,7 +2,7 @@
 // Click icon → open panel with lesson picker.
 // Click App Card on the board → open the chosen lesson in the chosen mode.
 
-const ENG_VERSION = '2026-05-18-v9';
+const ENG_VERSION = '2026-05-18-v10';
 console.log('%c[eng app] version ' + ENG_VERSION + ' loaded at ' + new Date().toISOString(),
             'color:#4262ff;font-weight:bold');
 
@@ -37,7 +37,7 @@ async function init() {
       console.warn('[eng app] app_card has no lessonId, ignoring');
       return;
     }
-    const url = `${lessonId}.html?mode=${mode}&v=${Date.now()}`;
+    const url = `lesson-frame.html?lesson=${encodeURIComponent(lessonId)}&mode=${mode}&v=${Date.now()}`;
     try {
       if (mode === 'panel') {
         await miro.board.ui.openPanel({ url });
@@ -58,7 +58,7 @@ async function init() {
       const m = e && e.data;
       if (!m || m.type !== 'switch') return;
       console.log('[eng app] switch request:', m);
-      const url = `${m.lessonId}.html?mode=${m.to}&v=${Date.now()}`;
+      const url = `lesson-frame.html?lesson=${encodeURIComponent(m.lessonId)}&mode=${m.to}&v=${Date.now()}`;
       try {
         if (m.from === 'modal') await miro.board.ui.closeModal();
         if (m.from === 'panel') await miro.board.ui.closePanel();
