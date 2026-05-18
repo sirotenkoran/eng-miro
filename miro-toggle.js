@@ -51,16 +51,17 @@
       const here = window.location.pathname.split('/').pop() || 'lead-in.html';
       const next = mode === 'modal' ? 'panel' : 'modal';
       const url = `${here}?mode=${next}&v=${Date.now()}`;
+      // Don't call closeModal/closePanel — that tears down our iframe
+      // mid-await and the open* call below never fires. Miro auto-closes
+      // the currently-open container when a different kind is opened.
       try {
         if (mode === 'modal') {
-          await miro.board.ui.closeModal();
           await miro.board.ui.openPanel({ url });
         } else {
-          await miro.board.ui.closePanel();
           await miro.board.ui.openModal({ url, fullscreen: true });
         }
       } catch (e) {
-        console.error('[eng toggle] switch failed', e);
+        console.error('[eng toggle] switch failed', e, '— name:', e && e.name, '— message:', e && e.message);
         btn.disabled = false;
       }
     };
