@@ -11,7 +11,7 @@ async function init() {
   }
 
   await miro.board.ui.on('icon:click', async () => {
-    const url = 'lead-in.html?v=' + Date.now();
+    const url = 'lead-in.html?mode=modal&v=' + Date.now();
     console.log('[eng] icon clicked, opening modal:', url);
     try {
       await miro.board.ui.openModal({ url, fullscreen: true });
