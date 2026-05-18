@@ -58,13 +58,21 @@ let initialized = false;
   } else {
     frame.classList.add('hidden');
     let teacher = false;
-    try { teacher = await isTeacher(); } catch (_) {}
-    if (teacher) {
-      renderPicker();
-    } else {
-      emptyMsg.classList.remove('hidden');
-      emptyMsg.textContent = 'Click a lesson card on the board to open the exercise here.';
+    try {
+      teacher = await isTeacher();
+      console.log('[eng panel] isTeacher returned', teacher);
+    } catch (e) {
+      console.error('[eng panel] isTeacher threw', e);
     }
+    try {
+      const boardInfo = await window.miro.board.getInfo();
+      console.log('[eng panel] miro.board.getInfo() →', boardInfo);
+    } catch (e) {
+      console.error('[eng panel] getInfo threw', e);
+    }
+    // For the prototype: always show the picker. Role-based gating returns once
+    // we know what fields getInfo() actually exposes for owner detection.
+    renderPicker();
   }
 
   setupTabs();
