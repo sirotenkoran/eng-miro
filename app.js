@@ -2,7 +2,7 @@
 // Click icon → open panel with lesson picker.
 // Click App Card on the board → open the chosen lesson in the chosen mode.
 
-const ENG_VERSION = '2026-05-18-v8';
+const ENG_VERSION = '2026-05-18-v9';
 console.log('%c[eng app] version ' + ENG_VERSION + ' loaded at ' + new Date().toISOString(),
             'color:#4262ff;font-weight:bold');
 
@@ -49,7 +49,39 @@ async function init() {
     }
   });
 
-  console.log('[eng app] init complete — icon + app_card:open listeners armed');
+  // Listen for switch requests from the lesson iframe (miro-toggle.js).
+  // The iframe can't close its own container and open another without
+  // tearing itself down — so it broadcasts the intent and we do it here.
+  try {
+    const bc = new BroadcastChannel('eng-app');
+    bc.onmessage = async (e) => {
+      const m = e && e.data;
+      if (!m || m.type !== 'switch') return;
+      console.log('[eng app] switch request:', m);
+      const url = `${m.lessonId}.html?mode=${m.to}&v=${Date.now()}`;
+      try {
+        if (m.from === 'modal') await miro.board.ui.closeModal();
+        if (m.from === 'panel') await miro.board.ui.closePanel();
+      } catch (err) {
+        console.warn('[eng app] close before switch failed (ignoring):', err && err.message);
+      }
+      try {
+        if (m.to === 'panel') {
+          await miro.board.ui.openPanel({ url });
+        } else {
+          await miro.board.ui.openModal({ url, fullscreen: true });
+        }
+        console.log('[eng app] switch done →', m.to);
+      } catch (err) {
+        console.error('[eng app] open after switch failed:', err, '— name:', err && err.name, '— message:', err && err.message);
+      }
+    };
+    console.log('[eng app] BroadcastChannel(eng-app) listener armed');
+  } catch (e) {
+    console.warn('[eng app] BroadcastChannel not available', e);
+  }
+
+  console.log('[eng app] init complete — icon + app_card:open + switch listeners armed');
 }
 
 init().catch(err => console.error('[eng app] init failed', err));
