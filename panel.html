@@ -4,41 +4,42 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Eng Lessons</title>
-  <link rel="stylesheet" href="dashboard.css">
   <script src="https://miro.com/app/static/sdk/v2/miro.js"></script>
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1a1a1a; }
+    body { padding: 18px; box-sizing: border-box; }
+    h2 { margin: 0 0 4px; font-size: 16px; }
+    p.muted { color: #666; font-size: 13px; margin: 0 0 16px; }
+    fieldset { border: 0; padding: 0; margin: 0 0 16px; }
+    legend { font-size: 12px; color: #555; padding: 0; margin-bottom: 6px; }
+    .mode-options { display: flex; gap: 12px; }
+    .mode-options label { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+    ul#picker-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .picker-item { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; padding: 10px 12px; border: 1px solid #d0d0d0; border-radius: 8px; background: #fff; font: inherit; text-align: left; cursor: pointer; }
+    .picker-item:hover:not([disabled]) { background: #f5f7ff; border-color: #4262ff; }
+    .picker-item[disabled] { cursor: progress; opacity: 0.7; }
+    .picker-item strong { font-size: 14px; }
+    .picker-item span { font-size: 12px; color: #666; }
+    .fatal { color: #b00020; font-weight: 500; }
+    .version { position: fixed; bottom: 6px; right: 8px; font-size: 10px; color: #aaa; }
+  </style>
 </head>
 <body>
-  <nav class="tabs" id="tabs">
-    <button class="tab active" data-tab="lesson">Lesson</button>
-    <button class="tab" data-tab="dashboard">Dashboard</button>
-  </nav>
+  <h2>Add a lesson to the board</h2>
+  <p class="muted">Pick a lesson — an app card appears on the board. Click it later to open the lesson in the chosen mode.</p>
 
-  <main>
-    <section id="tab-lesson" class="tab-pane active">
-      <div id="lesson-empty" class="empty hidden"></div>
-      <div id="lesson-picker" class="picker hidden">
-        <h3>Add a lesson to the board</h3>
-        <p class="muted">Pick a lesson — a card appears on the board. Students click it to open the exercise here.</p>
-        <ul id="picker-list"></ul>
-      </div>
-      <iframe id="lesson-frame" title="Lesson"></iframe>
-    </section>
+  <fieldset>
+    <legend>How should clicking the card open the lesson?</legend>
+    <div class="mode-options">
+      <label><input type="radio" name="mode" value="modal" checked> Fullscreen</label>
+      <label><input type="radio" name="mode" value="panel"> Side panel</label>
+    </div>
+  </fieldset>
 
-    <section id="tab-dashboard" class="tab-pane">
-      <header class="dash-header">
-        <h2>Class progress</h2>
-        <button id="refresh-btn" type="button">Refresh</button>
-      </header>
-      <div id="dashboard-content">Loading…</div>
-      <div id="dashboard-settings" class="settings hidden">
-        <label>
-          <input type="checkbox" id="share-toggle">
-          Show progress to students
-        </label>
-      </div>
-    </section>
-  </main>
+  <ul id="picker-list"></ul>
+  <div id="error" class="fatal" style="display:none"></div>
+  <div class="version" id="version-tag"></div>
 
-  <script type="module" src="panel.js"></script>
+  <script src="panel.js"></script>
 </body>
 </html>

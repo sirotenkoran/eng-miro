@@ -3,6 +3,8 @@
 // Activated only when the URL has ?mode=modal or ?mode=panel and we're
 // inside an iframe — standalone usage stays untouched.
 
+const ENG_VERSION = '2026-05-18-v8';
+
 (function () {
   'use strict';
 
@@ -10,6 +12,9 @@
   const mode = params.get('mode');
   if (mode !== 'modal' && mode !== 'panel') return;
   if (window.parent === window) return;
+
+  console.log('%c[eng toggle] version ' + ENG_VERSION + ' loaded — mode=' + mode,
+              'color:#4262ff;font-weight:bold');
 
   const sdk = document.createElement('script');
   sdk.src = 'https://miro.com/app/static/sdk/v2/miro.js';
