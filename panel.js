@@ -21,10 +21,17 @@ let local = { tasks: {}, completed: 0, total: 0 };
 let initialized = false;
 
 (async function bootstrap() {
+  console.log('[eng panel] bootstrap start',
+    '— miro present:', typeof window.miro,
+    '— miro.board present:', typeof (window.miro && window.miro.board),
+    '— miro.board.getUserInfo present:', typeof (window.miro && window.miro.board && window.miro.board.getUserInfo));
+
   try {
     me = await getIdentity();
+    console.log('[eng panel] getIdentity ok', me);
   } catch (e) {
-    showError('Cannot read Miro user info. Are you running this inside Miro?');
+    console.error('[eng panel] getIdentity failed:', e, '— name:', e && e.name, '— message:', e && e.message, '— code:', e && e.code);
+    showError('Cannot read Miro user info: ' + ((e && (e.message || e.name)) || String(e)));
     return;
   }
 
