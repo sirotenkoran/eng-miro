@@ -1,0 +1,2037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lead-in — interactive lesson</title>
+<style>
+  :root {
+    --primary: #1d3a6e;
+    --primary-soft: #eef2f8;
+    --bg: #f4f5f7;
+    --card: #ffffff;
+    --text: #1a1a1a;
+    --muted: #6b7280;
+    --border: #e1e5eb;
+    --success: #2e7d32;
+    --success-bg: #dff6e3;
+    --success-border: #4caf50;
+    --error: #c62828;
+    --error-bg: #ffe8ea;
+    --error-border: #e53935;
+    --shadow: 0 6px 28px rgba(15, 30, 60, 0.08);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    padding: 24px 16px 48px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* ============ HEADER ============ */
+  .lesson-header {
+    margin: 0 0 22px;
+    padding: 22px 24px;
+    background: var(--card);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+  }
+  .lesson-header .title-block {
+    flex: 1 1 auto;
+    min-width: 200px;
+  }
+  .lesson-header h1 {
+    margin: 0 0 4px;
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    color: var(--primary);
+  }
+  .lesson-header .subtitle {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .lesson-header .progress {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .progress-pill {
+    background: var(--primary-soft);
+    color: var(--primary);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .progress-pill.all-done {
+    background: var(--success-bg);
+    color: var(--success);
+  }
+  .btn {
+    background: var(--card);
+    border: 1.5px solid var(--primary);
+    color: var(--primary);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s, color 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .btn:hover, .btn:focus-visible {
+    background: var(--primary);
+    color: #fff;
+    outline: none;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn.ghost {
+    border-color: var(--border);
+    color: var(--muted);
+  }
+  .btn.ghost:hover {
+    background: var(--border);
+    color: var(--text);
+  }
+
+  /* ============ SECTION ============ */
+  .lesson-section {
+    margin-bottom: 22px;
+  }
+  .section-banner {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 4px 4px 0 0;
+    font-weight: 900;
+    font-size: 18px;
+    letter-spacing: 0.6px;
+    margin-bottom: -1px;
+    margin-left: 4px;
+  }
+
+  /* ============ TASK (details) ============ */
+  details.task {
+    background: var(--card);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  details.task[open] {
+    box-shadow: 0 10px 36px rgba(15, 30, 60, 0.12);
+  }
+  details.task > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  details.task > summary::-webkit-details-marker { display: none; }
+  details.task > summary::marker { content: ""; }
+
+  .task-eye {
+    flex: 0 0 auto;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--primary-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+  }
+  details.task > summary:hover .task-eye {
+    background: var(--primary);
+    color: #fff;
+    transform: scale(1.06);
+  }
+  .task-eye svg { width: 20px; height: 20px; }
+  .eye-closed { display: none; }
+  details.task[open] .eye-open { display: none; }
+  details.task[open] .eye-closed { display: block; }
+
+  .task-meta {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .task-title {
+    display: block;
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--text);
+  }
+  .task-subtitle {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .task-status {
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent;
+    font-weight: 900;
+    font-size: 14px;
+    transition: all 0.3s;
+  }
+  .task-status.complete {
+    background: var(--success-bg);
+    border-color: var(--success-border);
+    color: var(--success);
+    animation: pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .task-status.complete::after { content: "✓"; }
+
+  .task-body {
+    padding: 4px 24px 22px;
+    border-top: 1px solid var(--border);
+    margin-top: 0;
+    animation: fadeIn 0.35s ease-out;
+  }
+  .task-body > p.task-instruction {
+    margin: 16px 0 16px;
+    font-size: 15px;
+    color: var(--text);
+  }
+  .task-body > .task-instruction strong {
+    color: var(--primary);
+  }
+  .task-footer {
+    margin-top: 18px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pop {
+    0%   { transform: scale(0.6); }
+    55%  { transform: scale(1.18); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-7px); }
+    40% { transform: translateX(7px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+  @keyframes flash-correct {
+    0%   { background: var(--success-bg); }
+    100% { background: transparent; }
+  }
+
+  /* ============ DRAG-DROP (shared) ============ */
+  .dd-bank {
+    border: 1.5px solid #c5c5c5;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-height: 56px;
+    align-items: center;
+    justify-content: center;
+  }
+  .dd-bank:empty::after {
+    content: "All words placed";
+    color: var(--muted);
+    font-style: italic;
+    font-size: 14px;
+  }
+  .dd-word {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 14px;
+    background: var(--primary-soft);
+    border: 1.5px solid #c5d0e0;
+    border-radius: 7px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a2a44;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.2s, border-color 0.2s;
+  }
+  .dd-word:hover:not(.placed):not(.dragging) {
+    background: #e1e8f3;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  .dd-word.dragging { opacity: 0.25; }
+  .dd-word.ghost {
+    position: fixed;
+    pointer-events: none;
+    z-index: 1000;
+    cursor: grabbing;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+    transform: scale(1.06) rotate(-2deg);
+    background: #fff;
+    border-color: var(--primary);
+  }
+  .dd-word.placed {
+    background: var(--success-bg);
+    border-color: var(--success-border);
+    color: var(--success);
+    cursor: default;
+    animation: pop 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .dd-word.placed::after {
+    content: "✓";
+    margin-left: 6px;
+    font-weight: 900;
+    color: var(--success);
+  }
+  .dd-word.example {
+    background: #f0e9d0;
+    border-color: #c8b870;
+    color: #6a5a14;
+    cursor: default;
+  }
+  .dd-word.example::after {
+    content: "example";
+    margin-left: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #6a5a14;
+    opacity: 0.7;
+  }
+  .dd-word.wrong-shake {
+    animation: shake 0.45s ease-out;
+    border-color: var(--error-border);
+    background: var(--error-bg);
+    color: var(--error);
+  }
+  .dd-word.example-bank {
+    text-decoration: line-through;
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  /* category-style drop zones (vocab 1A) */
+  ol.dd-categories {
+    list-style: none;
+    counter-reset: cat;
+    padding: 0;
+    margin: 0;
+  }
+  ol.dd-categories li {
+    counter-increment: cat;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+  }
+  ol.dd-categories li::before {
+    content: counter(cat);
+    font-weight: 800;
+    color: var(--primary);
+    font-size: 16px;
+    min-width: 16px;
+  }
+  .cat-label {
+    font-size: 15px;
+    min-width: 150px;
+  }
+  .dd-zone {
+    flex: 1;
+    border-bottom: 1.5px dotted #b3b3b3;
+    min-height: 38px;
+    padding: 3px 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    transition: background 0.18s, border-color 0.18s;
+  }
+  .dd-zone.hover {
+    background: var(--primary-soft);
+    border-bottom-color: var(--primary);
+    border-bottom-style: solid;
+  }
+
+  /* alphabet groups */
+  .alpha-groups {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .alpha-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #fafbfd;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .alpha-row .alpha-head {
+    flex: 0 0 110px;
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .alpha-row .alpha-head .sound {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+    font-style: italic;
+  }
+  .alpha-row .dd-zone {
+    border-bottom: 1.5px dashed #c5c5c5;
+    border-radius: 4px;
+    min-height: 42px;
+  }
+  .alpha-row.empty-group .dd-zone {
+    background: #f5f5f5;
+    color: var(--muted);
+  }
+  .alpha-row.empty-group .dd-zone::after {
+    content: "(no other letters)";
+    color: var(--muted);
+    font-style: italic;
+    font-size: 13px;
+  }
+
+  /* inline blanks (grammar 2A, classroom 4A) */
+  .blanks-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .blanks-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .blanks-list li:last-child { border-bottom: none; }
+  .blanks-list .letter {
+    flex: 0 0 28px;
+    font-weight: 900;
+    color: var(--primary);
+    font-size: 16px;
+    padding-top: 1px;
+  }
+  .blanks-list .pic-hint {
+    display: inline-block;
+    margin-right: 6px;
+    padding: 2px 8px;
+    background: #f0e9d0;
+    color: #6a5a14;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    vertical-align: middle;
+  }
+  .blanks-list .text {
+    flex: 1;
+    line-height: 1.9;
+    font-size: 15px;
+  }
+  .blank {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 78px;
+    min-height: 30px;
+    padding: 2px 8px;
+    margin: 0 2px;
+    border-bottom: 1.5px solid #999;
+    vertical-align: middle;
+    transition: background 0.18s, border-color 0.18s;
+  }
+  .blank.hover {
+    background: var(--primary-soft);
+    border-bottom-color: var(--primary);
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+  }
+  .blank.filled {
+    border-bottom-color: transparent;
+  }
+  .blank .dd-word {
+    margin: 0;
+  }
+
+  /* ============ INPUT-TYPE TASKS ============ */
+  .input-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .input-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+  }
+  .input-list .num {
+    flex: 0 0 24px;
+    color: var(--primary);
+    font-weight: 800;
+    font-size: 15px;
+  }
+  .input-list .prompt {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    color: var(--text);
+  }
+  .input-list .prompt .scrambled,
+  .input-list .prompt .word,
+  .input-list .prompt .gap-display {
+    background: #f5f7fb;
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: #444;
+  }
+  .input-list .prompt .word { letter-spacing: 0; font-family: inherit; }
+  .input-list .prompt .arrow {
+    color: var(--muted);
+    font-weight: 700;
+  }
+  .answer-input {
+    flex: 0 1 200px;
+    padding: 7px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text);
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+    min-width: 0;
+  }
+  .answer-input:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+  .answer-input.correct {
+    background: var(--success-bg);
+    border-color: var(--success-border);
+    color: var(--success);
+    font-weight: 700;
+  }
+  .answer-input.error {
+    background: var(--error-bg);
+    border-color: var(--error-border);
+    color: var(--error);
+    animation: shake 0.45s ease-out;
+  }
+  .answer-input[type="number"] {
+    flex: 0 1 100px;
+    text-align: center;
+    font-weight: 700;
+  }
+  .answer-input.short {
+    flex: 0 1 110px;
+  }
+
+  /* nationality table */
+  .nation-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 4px;
+  }
+  .nation-table th, .nation-table td {
+    text-align: left;
+    padding: 9px 8px;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+    vertical-align: middle;
+  }
+  .nation-table th {
+    background: var(--primary-soft);
+    color: var(--primary);
+    font-weight: 800;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .nation-table .example-cell {
+    color: var(--muted);
+    font-style: italic;
+  }
+  .nation-table .nationality-cell {
+    font-weight: 600;
+    color: var(--primary);
+  }
+  .nation-table input.answer-input {
+    width: 100%;
+    flex: none;
+  }
+
+  /* ============ CHOICE (radio) ============ */
+  .choice-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .choice-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+  }
+  .choice-list li:last-child { border-bottom: none; }
+  .choice-list .num {
+    color: var(--primary);
+    font-weight: 800;
+    margin-right: 4px;
+  }
+  .choice-group {
+    display: inline-flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .choice-btn {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .choice-btn:hover:not(:disabled) {
+    background: var(--primary-soft);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  .choice-btn.correct {
+    background: var(--success-bg);
+    border-color: var(--success-border);
+    color: var(--success);
+    cursor: default;
+  }
+  .choice-btn.correct::after {
+    content: "✓";
+    margin-left: 4px;
+    font-weight: 900;
+  }
+  .choice-btn.wrong {
+    background: var(--error-bg);
+    border-color: var(--error-border);
+    color: var(--error);
+    animation: shake 0.45s ease-out;
+  }
+  .choice-btn:disabled { cursor: default; }
+
+  /* ============ MISC ============ */
+  .celebration {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, var(--success-bg), #d4e6ff);
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 700;
+    color: var(--success);
+    font-size: 15px;
+    animation: pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: none;
+  }
+  .celebration.show { display: block; }
+
+  .lesson-finale {
+    margin: 28px 0 0;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--success-bg), #d4e6ff);
+    border-radius: 14px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    display: none;
+  }
+  .lesson-finale.show { display: block; animation: pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .lesson-finale h2 {
+    margin: 0 0 6px;
+    color: var(--success);
+  }
+  .lesson-finale p {
+    margin: 0 0 12px;
+    color: var(--text);
+  }
+
+  /* ============ REFERENCE (theory accordion) ============ */
+  /* shares the look of .task but without the progress dot */
+  details.reference {
+    background: var(--card);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  details.reference > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    user-select: none;
+  }
+  details.reference > summary::-webkit-details-marker { display: none; }
+  details.reference[open] {
+    box-shadow: 0 10px 36px rgba(15, 30, 60, 0.12);
+  }
+  details.reference .task-body {
+    padding: 4px 24px 22px;
+    border-top: 1px solid var(--border);
+    animation: fadeIn 0.35s ease-out;
+  }
+
+  /* ============ CONVERSATION (inline inputs in dialogues) ============ */
+  .conversation {
+    background: #fafbfd;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 0 0 14px;
+    font-size: 15px;
+    line-height: 1.85;
+  }
+  .conversation p {
+    margin: 4px 0;
+  }
+  .conversation .speaker {
+    font-weight: 700;
+    color: var(--primary);
+    margin-right: 4px;
+  }
+  .answer-input.inline {
+    flex: none;
+    display: inline-block;
+    width: 90px;
+    padding: 3px 9px;
+    font-size: 14px;
+    font-weight: 600;
+    vertical-align: baseline;
+    text-align: center;
+    margin: 0 1px;
+  }
+  .answer-input.inline.wide {
+    width: 200px;
+    text-align: left;
+  }
+  .answer-input.inline.xwide {
+    width: 320px;
+    text-align: left;
+  }
+
+  /* sentence list with one input per item */
+  .sentence-list {
+    list-style: none;
+    counter-reset: snum;
+    padding: 0;
+    margin: 0;
+  }
+  .sentence-list li {
+    counter-increment: snum;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 15px;
+    flex-wrap: wrap;
+  }
+  .sentence-list li::before {
+    content: counter(snum);
+    color: var(--primary);
+    font-weight: 800;
+    min-width: 22px;
+  }
+  .sentence-list .bold-word {
+    font-weight: 700;
+    color: #1a2a44;
+    background: #fff3cf;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  .sentence-list .prompt-words {
+    color: #555;
+    font-style: italic;
+    margin-right: 4px;
+  }
+  .sentence-list .arrow-sep {
+    color: var(--muted);
+    margin: 0 4px;
+  }
+
+  /* ============ PREVIEW IMAGE ============ */
+  .preview-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 4px 0 18px;
+    border: 1px solid var(--border);
+    background: #fff;
+  }
+
+  /* ============ AUDIO BLOCK ============ */
+  .audio-block {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #fafbfd;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 12px 0 16px;
+  }
+  .audio-block audio {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 36px;
+  }
+  .audio-block .audio-label {
+    flex: 0 0 auto;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.2px;
+  }
+
+  /* ============ IMAGE-MATCH (photo grid) ============ */
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 4px 0 0;
+  }
+  .photo-card {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    position: relative;
+  }
+  .photo-card .photo-img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: contain;
+    background: #fff;
+    display: block;
+  }
+  .photo-card .photo-letter {
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    background: rgba(255,255,255,0.92);
+    color: var(--primary);
+    font-weight: 900;
+    font-size: 14px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    pointer-events: none;
+  }
+  .photo-card .blank {
+    min-height: 40px;
+    border-bottom: none;
+    border-top: 1px dashed var(--border);
+    padding: 6px;
+    justify-content: center;
+  }
+  .photo-card .blank.hover {
+    background: var(--primary-soft);
+    border-top-color: var(--primary);
+    border-top-style: solid;
+  }
+  .photo-card .blank.filled {
+    border-top-color: var(--success-border);
+    background: var(--success-bg);
+  }
+  .photo-card.solved {
+    border-color: var(--success-border);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.18);
+  }
+
+  @media (max-width: 560px) {
+    body { padding: 16px 10px 36px; }
+    .lesson-header { padding: 18px; }
+    .lesson-header h1 { font-size: 22px; }
+    details.task > summary { padding: 14px 14px; gap: 12px; }
+    .task-body { padding: 4px 16px 18px; }
+    .cat-label { min-width: 110px; font-size: 14px; }
+    .dd-word { padding: 8px 13px; font-size: 14px; }
+    .alpha-row { flex-direction: column; align-items: stretch; gap: 6px; }
+    .alpha-row .alpha-head { flex: none; }
+    .input-list li { flex-wrap: wrap; }
+    .answer-input { flex: 1 1 100%; }
+    .nation-table th, .nation-table td { padding: 7px 4px; font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+
+    <header class="lesson-header">
+      <div class="title-block">
+        <h1>Lead-in</h1>
+        <p class="subtitle">Interactive lesson: Vocabulary &amp; Grammar Review. Reveal each task with the eye icon.</p>
+      </div>
+      <div class="progress">
+        <span class="progress-pill" id="progressPill">0 / 14 done</span>
+        <button class="btn ghost" id="expandAllBtn" type="button">Expand all</button>
+        <button class="btn ghost" id="resetAllBtn" type="button">Reset all</button>
+      </div>
+    </header>
+
+    <!-- ============================== VOCABULARY ============================== -->
+    <div class="lesson-section">
+      <div class="section-banner">VOCABULARY</div>
+
+      <!-- 1A — Sort words to categories -->
+      <details class="task" data-task="vocab-1a" data-type="drag-categories">
+        <summary>
+          <span class="task-eye" aria-hidden="true">
+            <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </span>
+          <span class="task-meta">
+            <span class="task-title">1A — sort the words</span>
+            <span class="task-subtitle">Place 6 words into 6 categories</span>
+          </span>
+          <span class="task-status" data-task-status="vocab-1a"></span>
+        </summary>
+        <div class="task-body">
+          <p class="task-instruction">Put the words in the box in the correct group.</p>
+          <div class="dd-bank" id="bank-vocab-1a"></div>
+          <ol class="dd-categories">
+            <li><span class="cat-label">everyday objects:</span><div class="dd-zone" data-accepts="objects"></div></li>
+            <li><span class="cat-label">colours:</span><div class="dd-zone" data-accepts="colours"></div></li>
+            <li><span class="cat-label">countries:</span><div class="dd-zone" data-accepts="countries"></div></li>
+            <li><span class="cat-label">numbers:</span><div class="dd-zone" data-accepts="numbers"></div></li>
+            <li><span class="cat-label">days of the week:</span><div class="dd-zone" data-accepts="days"></div></li>
+            <li><span class="cat-label">the alphabet:</span><div class="dd-zone" data-accepts="alphabet"></div></li>
+          </ol>
+          <div class="celebration">Well done! All words in place.</div>
+          <div class="task-footer">
+            <button class="btn ghost" type="button" data-reset="vocab-1a">Reset</button>
+          </div>
+        </div>
+      </details>
+
+      <!-- Colours — anagrams -->
+      <details class="task" data-task="colours" data-type="input">
+        <summary>
+          <span class="task-eye"><svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></span>
+          <span class="task-meta">
+            <span class="task-title">Colours — anagrams</span>
+            <span class="task-subtitle">Unscramble the letters (10 colours)</span>
+          </span>
+          <span class="task-status" data-task-status="colours"></span>
+        </summary>
+        <div class="task-body">
+          <p class="task-instruction">Reorder the letters to make colours.</p>
+          <img class="preview-image" src="assets/img/preview_colours.jpg" alt="Colour swatches with scrambled letters">
+          <ol class="input-list">
+            <li><span class="num">1</span><span class="prompt"><span class="scrambled">der</span><span class="arrow">→</span></span><input class="answer-input short" data-answer="red" autocomplete="off" spellcheck="false" placeholder="..."></li>
+            <li><span class="num">2</span><span class="prompt"><span class="scrambled">wleloy</span><span class="arrow">→</span></span><input class="answer-input short" data-answer="yellow" autocomplete="off" spellcheck="false" placeholder="..."></li>
+            <li><span class="num">3</span><span class="prompt"><span class="scrambled">eblu</span><span class="arrow">→</span></span><input class="answer-input short" data-answer="blue" autocomplete="off" spellcheck="false" placeholder="..."></li>
+            <li><span class="num">4</span><span class="prompt"><span class="scrambled">enegr</span><span class="arrow">→</span></span><input class="answer-input short" data-answer="green" autocomplete="off" spellcheck="false" placeholder="..."></li>
+            <li><span class="num">5</span><span class="prompt"><span class="scrambled">tihwe</span><span class="arrow">→</span></span><input class="answer-input short" data-answer="white" autocomplete="off" spellcheck="false" placeholder="..."></li>
+            <li><span class="num">6</span><span class="prompt"><span class="scrambled">kclba</span><span class="arrow">→</span></span><input class="answer-input short" data-answer="black" autocomplete="off" spellcheck="false" placeholder="..."></li>
+            <li><span class="num">7</span><span class="prompt"><span class="scrambled">wbnor</span><span class="arrow">→</span></span><input class="answer-input short" data-answer="brown" autocomplete="off" spellcheck="false" placeholder="..."></li>
+            <li><span class="num">8</span><span class="prompt"><span class="scrambled">eorang</span><span class="arrow">→</span></span><input class="answer-input short" data-answer="orange" autocomplete="off" spellcheck="false" placeholder="..."></li>
+            <li><span class="num">9</span><span class="prompt"><span class="scrambled">uelprp</span><span class="arrow">→</span></span><input class="answer-input short" data-answer="purple" autocomplete="off" spellcheck="false" placeholder="..."></li>
+            <li><span class="num">10</span><span class="prompt"><span class="scrambled">npki</span><span class="arrow">→</span></span><input class="answer-input short" data-answer="pink" autocomplete="off" spellcheck="false" placeholder="..."></li>
+          </ol>
+          <div class="audio-block">
+            <audio controls preload="metadata"><source src="assets/audio/VBL_02.mp3" type="audio/mpeg"></audio>
+            <span class="audio-label">VB.L.02 — Listen and repeat</span>
+          </div>
+          <div class="task-footer">
+            <button class="btn ghost" type="button" data-reset="colours">Reset</button>
+          </div>
+        </div>
+      </details>
+
+      <!-- Nationalities — table -->
+      <details class="task" data-task="nationalities" data-type="input">
+        <summary>
+          <span class="task-eye"><svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></span>
+          <span class="task-meta">
+            <span class="task-title">Nationalities &amp; countries</span>
+            <span class="task-subtitle">Write the country for each nationality</span>
+          </span>
+          <span class="task-status" data-task-status="nationalities"></span>
+        </summary>
+        <div class="task-body">
+          <p class="task-instruction">Complete the table with the country.</p>
+          <table class="nation-table">
+            <thead><tr><th>Country</th><th>Nationality</th></tr></thead>
+            <tbody>
+              <tr><td class="example-cell">Brazil (example)</td><td class="nationality-cell">Brazilian</td></tr>
+              <tr><td><input class="answer-input" data-answer="Australia" autocomplete="off" spellcheck="false"></td><td class="nationality-cell">Australian</td></tr>
+              <tr><td><input class="answer-input" data-answer="Colombia" autocomplete="off" spellcheck="false"></td><td class="nationality-cell">Colombian</td></tr>
+              <tr><td><input class="answer-input" data-answer="the USA" data-aliases="the usa|usa|the us|america|the united states|united states" autocomplete="off" spellcheck="false"></td><td class="nationality-cell">American</td></tr>
+              <tr><td><input class="answer-input" data-answer="Mexico" autocomplete="off" spellcheck="false"></td><td class="nationality-cell">Mexican</td></tr>
+              <tr><td><input class="answer-input" data-answer="Russia" autocomplete="off" spellcheck="false"></td><td class="nationality-cell">Russian</td></tr>
+              <tr><td><input class="answer-input" data-answer="Argentina" autocomplete="off" spellcheck="false"></td><td class="nationality-cell">Argentinian</td></tr>
+              <tr><td><input class="answer-input" data-answer="South Africa" autocomplete="off" spellcheck="false"></td><td class="nationality-cell">South African</td></tr>
+              <tr><td><input class="answer-input" data-answer="Italy" autocomplete="off" spellcheck="false"></td><td class="nationality-cell">Italian</td></tr>
+            </tbody>
+          </table>
+          <div class="audio-block">
+            <audio controls preload="metadata"><source src="assets/audio/VBL_03.mp3" type="audio/mpeg"></audio>
+            <span class="audio-label">VB.L.03 — Listen and repeat</span>
+          </div>
+          <div class="task-footer">
+            <button class="btn ghost" type="button" data-reset="nationalities">Reset</button>
+          </div>
+        </div>
+      </details>
+
+      <!-- Alphabet — sound groups -->
+      <details class="task" data-task="alphabet" data-type="drag-categories">
+        <summary>
+          <span class="task-eye"><svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></span>
+          <span class="task-meta">
+            <span class="task-title">The alphabet — sound groups</span>
+            <span class="task-subtitle">Sort the letters by vowel sound</span>
+          </span>
+          <span class="task-status" data-task-status="alphabet"></span>
+        </summary>
+        <div class="task-body">
+          <p class="task-instruction">Put each letter into the group with the same vowel sound.</p>
+          <div class="dd-bank" id="bank-alphabet"></div>
+          <div class="alpha-groups">
+            <div class="alpha-row">
+              <div class="alpha-head">Group A<span class="sound">/eɪ/ as in "say"</span></div>
+              <div class="dd-zone" data-accepts="A"></div>
+            </div>
+            <div class="alpha-row">
+              <div class="alpha-head">Group B<span class="sound">/iː/ as in "see"</span></div>
+              <div class="dd-zone" data-accepts="B"></div>
+            </div>
+            <div class="alpha-row">
+              <div class="alpha-head">Group F<span class="sound">/e/ as in "ten"</span></div>
+              <div class="dd-zone" data-accepts="F"></div>
+            </div>
+            <div class="alpha-row">
+              <div class="alpha-head">Group I<span class="sound">/aɪ/ as in "my"</span></div>
+              <div class="dd-zone" data-accepts="I"></div>
+            </div>
+            <div class="alpha-row empty-group">
+              <div class="alpha-head">Group O<span class="sound">/oʊ/ as in "go"</span></div>
+              <div class="dd-zone" data-accepts="O"></div>
+            </div>
+            <div class="alpha-row">
+              <div class="alpha-head">Group Q<span class="sound">/uː/ as in "blue"</span></div>
+              <div class="dd-zone" data-accepts="Q"></div>
+            </div>
+            <div class="alpha-row empty-group">
+              <div class="alpha-head">Group R<span class="sound">/ɑːr/ as in "car"</span></div>
+              <div class="dd-zone" data-accepts="R"></div>
+            </div>
+          </div>
+          <div class="audio-block">
+            <audio controls preload="metadata"><source src="assets/audio/VBL_04.mp3" type="audio/mpeg"></audio>
+            <span class="audio-label">VB.L.04 — Listen and check</span>
+          </div>
+          <div class="celebration">Well done! Letters sorted by sound.</div>
+          <div class="task-footer">
+            <button class="btn ghost" type="button" data-reset="alphabet">Reset</button>
+          </div>
+        </div>
+      </details>
+
+      <!-- Days of the week — fill missing letters -->
+      <details class="task" data-task="days" data-type="input">
+        <summary>
+          <span class="task-eye"><svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></span>
+          <span class="task-meta">
+            <span class="task-title">Days of the week</span>
+            <span class="task-subtitle">Complete each day</span>
+          </span>
+          <span class="task-status" data-task-status="days"></span>
+        </summary>
+        <div class="task-body">
+          <p class="task-instruction">Complete the words for the days of the week.</p>
+          <ol class="input-list">
+            <li><span class="num">1</span><span class="prompt"><span class="gap-display">M _ _ d a y</span><span class="arrow">→</span></span><input class="answer-input short" data-answer="Monday" autocomplete="off" spellcheck="false"></li>
+            <li><span class="num">2</span><span class="prompt"><span class="gap-display">T _ e s _ a y</span><span class="arrow">→</span></span><input class="answer-input short" data-answer="Tuesday" autocomplete="off" spellcheck="false"></li>
+            <li><span class="num">3</span><span class="prompt"><span class="gap-display">W _ d n e _ d a y</span><span class="arrow">→</span></span><input class="answer-input short" data-answer="Wednesday" autocomplete="off" spellcheck="false"></li>
+            <li><span class="num">4</span><span class="prompt"><span class="gap-display">T h _ r s d _ y</span><span class="arrow">→</span></span><input class="answer-input short" data-answer="Thursday" autocomplete="off" spellcheck="false"></li>
+            <li><span class="num">5</span><span class="prompt"><span class="gap-display">F _ i d _ y</span><span class="arrow">→</span></span><input class="answer-input short" data-answer="Friday" autocomplete="off" spellcheck="false"></li>
+            <li><span class="num">6</span><span class="prompt"><span class="gap-display">S _ t u r _ a y</span><span class="arrow">→</span></span><input class="answer-input short" data-answer="Saturday" autocomplete="off" spellcheck="false"></li>
+            <li><span class="num">7</span><span class="prompt"><span class="gap-display">S u _ d a _</span><span class="arrow">→</span></span><input class="answer-input short" data-answer="Sunday" autocomplete="off" spellcheck="false"></li>
+          </ol>
+          <div class="audio-block">
+            <audio controls preload="metadata"><source src="assets/audio/VBL_05.mp3" type="audio/mpeg"></audio>
+            <span class="audio-label">VB.L.05 — Listen and repeat</span>
+          </div>
+          <div class="task-footer">
+            <button class="btn ghost" type="button" data-reset="days">Reset</button>
+          </div>
+        </div>
+      </details>
+
+      <!-- Numbers — write digits -->
+      <details class="task" data-task="numbers" data-type="input">
+        <summary>
+          <span class="task-eye"><svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></span>
+          <span class="task-meta">
+            <span class="task-title">Numbers 1–100</span>
+            <span class="task-subtitle">Write each number in digits</span>
+          </span>
+          <span class="task-status" data-task-status="numbers"></span>
+        </summary>
+        <div class="task-body">
+          <p class="task-instruction">Write each number using digits.</p>
+          <ol class="input-list">
+            <li><span class="num">1</span><span class="prompt"><span class="word">one</span><span class="arrow">→</span></span><input type="number" class="answer-input" data-answer="1" autocomplete="off"></li>
+            <li><span class="num">2</span><span class="prompt"><span class="word">twelve</span><span class="arrow">→</span></span><input type="number" class="answer-input" data-answer="12" autocomplete="off"></li>
+            <li><span class="num">3</span><span class="prompt"><span class="word">eight</span><span class="arrow">→</span></span><input type="number" class="answer-input" data-answer="8" autocomplete="off"></li>
+            <li><span class="num">4</span><span class="prompt"><span class="word">twenty</span><span class="arrow">→</span></span><input type="number" class="answer-input" data-answer="20" autocomplete="off"></li>
+            <li><span class="num">5</span><span class="prompt"><span class="word">a hundred</span><span class="arrow">→</span></span><input type="number" class="answer-input" data-answer="100" autocomplete="off"></li>
+            <li><span class="num">6</span><span class="prompt"><span class="word">fifteen</span><span class="arrow">→</span></span><input type="number" class="answer-input" data-answer="15" autocomplete="off"></li>
+            <li><span class="num">7</span><span class="prompt"><span class="word">forty-four</span><span class="arrow">→</span></span><input type="number" class="answer-input" data-answer="44" autocomplete="off"></li>
+            <li><span class="num">8</span><span class="prompt"><span class="word">eleven</span><span class="arrow">→</span></span><input type="number" class="answer-input" data-answer="11" autocomplete="off"></li>
+            <li><span class="num">9</span><span class="prompt"><span class="word">seventy-two</span><span class="arrow">→</span></span><input type="number" class="answer-input" data-answer="72" autocomplete="off"></li>
+            <li><span class="num">10</span><span class="prompt"><span class="word">ninety</span><span class="arrow">→</span></span><input type="number" class="answer-input" data-answer="90" autocomplete="off"></li>
+            <li><span class="num">11</span><span class="prompt"><span class="word">thirty</span><span class="arrow">→</span></span><input type="number" class="answer-input" data-answer="30" autocomplete="off"></li>
+          </ol>
+          <div class="audio-block">
+            <audio controls preload="metadata"><source src="assets/audio/VBL_06.mp3" type="audio/mpeg"></audio>
+            <span class="audio-label">VB.L.06 — Listen and check stressed syllables</span>
+          </div>
+          <div class="task-footer">
+            <button class="btn ghost" type="button" data-reset="numbers">Reset</button>
+          </div>
+        </div>
+      </details>
+
+    </div>
+
+    <!-- ============================== VOCABULARY BANK ============================== -->
+    <div class="lesson-section">
+      <div class="section-banner">VOCABULARY BANK</div>
+
+      <!-- everyday objects: match words to photos -->
+      <details class="task" data-task="objects-match" data-type="drag-blanks">
+        <summary>
+          <span class="task-eye"><svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></span>
+          <span class="task-meta">
+            <span class="task-title">Everyday objects — match words to photos</span>
+            <span class="task-subtitle">12 words &rarr; 12 photos (A&ndash;L)</span>
+          </span>
+          <span class="task-status" data-task-status="objects-match"></span>
+        </summary>
+        <div class="task-body">
+          <p class="task-instruction">Match the words (1&ndash;12) with the photos (A&ndash;L).</p>
+          <div class="dd-bank" id="bank-objects-match"></div>
+          <div class="photo-grid">
+            <div class="photo-card"><img class="photo-img" src="assets/img/obj_A.jpg" alt="Photo A"><span class="photo-letter">A</span><div class="blank" data-accepts="wallet"></div></div>
+            <div class="photo-card"><img class="photo-img" src="assets/img/obj_B.jpg" alt="Photo B"><span class="photo-letter">B</span><div class="blank" data-accepts="purse"></div></div>
+            <div class="photo-card"><img class="photo-img" src="assets/img/obj_C.jpg" alt="Photo C"><span class="photo-letter">C</span><div class="blank" data-accepts="stamps"></div></div>
+            <div class="photo-card"><img class="photo-img" src="assets/img/obj_D.jpg" alt="Photo D"><span class="photo-letter">D</span><div class="blank" data-accepts="driving licence"></div></div>
+            <div class="photo-card"><img class="photo-img" src="assets/img/obj_E.jpg" alt="Photo E"><span class="photo-letter">E</span><div class="blank" data-accepts="ticket"></div></div>
+            <div class="photo-card"><img class="photo-img" src="assets/img/obj_F.jpg" alt="Photo F"><span class="photo-letter">F</span><div class="blank" data-accepts="scissors"></div></div>
+            <div class="photo-card"><img class="photo-img" src="assets/img/obj_G.jpg" alt="Photo G"><span class="photo-letter">G</span><div class="blank" data-accepts="mobile"></div></div>
+            <div class="photo-card"><img class="photo-img" src="assets/img/obj_H.jpg" alt="Photo H"><span class="photo-letter">H</span><div class="blank" data-accepts="glasses"></div></div>
+            <div class="photo-card"><img class="photo-img" src="assets/img/obj_I.jpg" alt="Photo I"><span class="photo-letter">I</span><div class="blank" data-accepts="file"></div></div>
+            <div class="photo-card"><img class="photo-img" src="assets/img/obj_J.jpg" alt="Photo J"><span class="photo-letter">J</span><div class="blank" data-accepts="laptop"></div></div>
+            <div class="photo-card"><img class="photo-img" src="assets/img/obj_K.jpg" alt="Photo K"><span class="photo-letter">K</span><div class="blank" data-accepts="tissues"></div></div>
+            <div class="photo-card"><img class="photo-img" src="assets/img/obj_L.jpg" alt="Photo L"><span class="photo-letter">L</span><div class="blank" data-accepts="toothbrush"></div></div>
+          </div>
+          <div class="audio-block">
+            <audio controls preload="metadata"><source src="assets/audio/VBL_01.mp3" type="audio/mpeg"></audio>
+            <span class="audio-label">VB.L.01 — Look at the photos. Listen and repeat</span>
+          </div>
+          <div class="celebration">Well done! All 12 objects matched.</div>
+          <div class="task-footer">
+            <button class="btn ghost" type="button" data-reset="objects-match">Reset</button>
+          </div>
+        </div>
+      </details>
+
+    </div>
+
+    <!-- ============================== GRAMMAR ============================== -->
+    <div class="lesson-section">
+      <div class="section-banner">GRAMMAR</div>
+
+      <!-- Question words -->
+      <details class="task" data-task="question-words" data-type="choice">
+        <summary>
+          <span class="task-eye"><svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></span>
+          <span class="task-meta">
+            <span class="task-title">Question words</span>
+            <span class="task-subtitle">Choose the correct word for each question</span>
+          </span>
+          <span class="task-status" data-task-status="question-words"></span>
+        </summary>
+        <div class="task-body">
+          <p class="task-instruction">Choose the correct word to complete each question.</p>
+          <ol class="choice-list">
+            <li><span class="num">1</span>
+              <span class="choice-group">
+                <button class="choice-btn" type="button" data-correct="false">How's</button>
+                <button class="choice-btn" type="button" data-correct="true">What's</button>
+              </span>
+              your name?
+            </li>
+            <li><span class="num">2</span>
+              <span class="choice-group">
+                <button class="choice-btn" type="button" data-correct="true">Where</button>
+                <button class="choice-btn" type="button" data-correct="false">Who</button>
+              </span>
+              are you from?
+            </li>
+            <li><span class="num">3</span>
+              <span class="choice-group">
+                <button class="choice-btn" type="button" data-correct="true">How</button>
+                <button class="choice-btn" type="button" data-correct="false">Why</button>
+              </span>
+              are you today?
+            </li>
+            <li><span class="num">4</span>
+              <span class="choice-group">
+                <button class="choice-btn" type="button" data-correct="false">What's</button>
+                <button class="choice-btn" type="button" data-correct="true">Who's</button>
+              </span>
+              your favourite actor?
+            </li>
+            <li><span class="num">5</span>
+              <span class="choice-group">
+                <button class="choice-btn" type="button" data-correct="true">When's</button>
+                <button class="choice-btn" type="button" data-correct="false">Where's</button>
+              </span>
+              your birthday?
+            </li>
+            <li><span class="num">6</span>
+              <span class="choice-group">
+                <button class="choice-btn" type="button" data-correct="false">Why</button>
+                <button class="choice-btn" type="button" data-correct="true">What</button>
+              </span>
+              are you here?
+            </li>
+          </ol>
+          <div class="task-footer">
+            <button class="btn ghost" type="button" data-reset="question-words">Reset</button>
+          </div>
+        </div>
+      </details>
+
+      <!-- Grammar Review 2A — pronouns about photos -->
+      <details class="task" data-task="pronouns" data-type="drag-blanks">
+        <summary>
+          <span class="task-eye"><svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></span>
+          <span class="task-meta">
+            <span class="task-title">Pronouns about people &amp; things</span>
+            <span class="task-subtitle">Drag words into the gaps (you don't need 3 of the words)</span>
+          </span>
+          <span class="task-status" data-task-status="pronouns"></span>
+        </summary>
+        <div class="task-body">
+          <p class="task-instruction">Complete the sentences with words from the box. You do not need three of the words.</p>
+          <img class="preview-image" src="assets/img/preview_celebrities.jpg" alt="Photos: Ed Sheeran, Greta Thunberg, Michelle and Barack Obama, Egyptian pyramids, Italian pasta">
+          <div class="dd-bank" id="bank-pronouns"></div>
+          <ol class="blanks-list">
+            <li>
+              <span class="letter">A</span>
+              <span class="text"><span class="pic-hint">Ed Sheeran</span><span class="blank" data-accepts="He's"></span> a singer.</span>
+            </li>
+            <li>
+              <span class="letter">B</span>
+              <span class="text"><span class="pic-hint">Greta Thunberg</span><span class="blank" data-accepts="Her"></span> name's Greta.</span>
+            </li>
+            <li>
+              <span class="letter">C</span>
+              <span class="text"><span class="pic-hint">Michelle &amp; Barack Obama</span><span class="blank" data-accepts="She's"></span> married to <span class="blank" data-accepts="him"></span>.</span>
+            </li>
+            <li>
+              <span class="letter">D</span>
+              <span class="text"><span class="pic-hint">pyramids</span><span class="blank" data-accepts="They're"></span> in Egypt.</span>
+            </li>
+            <li>
+              <span class="letter">E</span>
+              <span class="text"><span class="pic-hint">pasta</span><span class="blank" data-accepts="It's"></span> from Italy.</span>
+            </li>
+          </ol>
+          <div class="audio-block">
+            <audio controls preload="metadata"><source src="assets/audio/L_01.mp3" type="audio/mpeg"></audio>
+            <span class="audio-label">L.01 — Listen and check</span>
+          </div>
+          <div class="celebration">Well done! All pronouns in place.</div>
+          <div class="task-footer">
+            <button class="btn ghost" type="button" data-reset="pronouns">Reset</button>
+          </div>
+        </div>
+      </details>
+
+      <!-- Classroom language 4A -->
+      <details class="task" data-task="classroom" data-type="drag-blanks">
+        <summary>
+          <span class="task-eye"><svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></span>
+          <span class="task-meta">
+            <span class="task-title">Classroom language</span>
+            <span class="task-subtitle">Complete the dialogues</span>
+          </span>
+          <span class="task-status" data-task-status="classroom"></span>
+        </summary>
+        <div class="task-body">
+          <p class="task-instruction">Complete the sentences with the words in the box.</p>
+          <div class="dd-bank" id="bank-classroom"></div>
+          <ol class="blanks-list">
+            <li>
+              <span class="letter">1</span>
+              <span class="text">A: What does <em>'singular'</em> <strong style="color:#6a5a14">mean</strong>? <br>B: It means one thing, not many — for example 'a car', not 'two cars'.</span>
+            </li>
+            <li>
+              <span class="letter">2</span>
+              <span class="text">A: <span class="blank" data-accepts="How"></span> do you spell it? <br>B: s — i — n — g — u — l — a — r.</span>
+            </li>
+            <li>
+              <span class="letter">3</span>
+              <span class="text">A: 'Work together'? I don't <span class="blank" data-accepts="understand"></span>.</span>
+            </li>
+            <li>
+              <span class="letter">4</span>
+              <span class="text">A: Sorry, could you say that <span class="blank" data-accepts="again"></span>, please? <br>B: Yes, the homework is Exercise 7.</span>
+            </li>
+            <li>
+              <span class="letter">5</span>
+              <span class="text">A: Sorry, which <span class="blank" data-accepts="page"></span> is it? <br>B: Thirty-five.</span>
+            </li>
+          </ol>
+          <div class="audio-block">
+            <audio controls preload="metadata"><source src="assets/audio/L_02.mp3" type="audio/mpeg"></audio>
+            <span class="audio-label">L.02 — Listen and underline the stressed word</span>
+          </div>
+          <div class="celebration">Well done! All dialogues complete.</div>
+          <div class="task-footer">
+            <button class="btn ghost" type="button" data-reset="classroom">Reset</button>
+          </div>
+        </div>
+      </details>
+
+    </div>
+
+    <!-- ============================== GRAMMAR BANK ============================== -->
+    <div class="lesson-section">
+      <div class="section-banner">GRAMMAR BANK</div>
+
+      <!-- Reference — theory (page 96) -->
+      <details class="reference">
+        <summary>
+          <span class="task-eye"><svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></span>
+          <span class="task-meta">
+            <span class="task-title">Reference — rules &amp; examples</span>
+            <span class="task-subtitle">Subject pronouns, object pronouns, question words (page 96)</span>
+          </span>
+        </summary>
+        <div class="task-body">
+          <img class="preview-image" src="assets/img/preview_gb_reference.jpg" alt="Grammar Bank reference page with rules for subject pronouns, object pronouns, possessive adjectives and question words">
+        </div>
+      </details>
+
+      <!-- 1. subject pronouns and be — Complete conversations -->
+      <details class="task" data-task="gb-pronouns-1" data-type="input">
+        <summary>
+          <span class="task-eye"><svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></span>
+          <span class="task-meta">
+            <span class="task-title">Subject pronouns and <em>be</em> &mdash; 1</span>
+            <span class="task-subtitle">Complete the conversations with the correct forms of <em>be</em>. Use contractions where possible.</span>
+          </span>
+          <span class="task-status" data-task-status="gb-pronouns-1"></span>
+        </summary>
+        <div class="task-body">
+          <p class="task-instruction">Complete the conversations with the correct forms of <em>be</em>. Use contractions where possible.</p>
+          <div class="conversation">
+            <p><span class="speaker">Nadia:</span> Are you Sofia?</p>
+            <p><span class="speaker">Jess:</span> No, I <input class="answer-input inline" data-answer="'m not" data-aliases="m not|am not|i'm not|i am not|i m not" autocomplete="off" spellcheck="false"> . I <input class="answer-input inline" data-answer="'m" data-aliases="m|am|i am|i'm" autocomplete="off" spellcheck="false"> Jess.</p>
+            <p><span class="speaker">Nadia:</span> <input class="answer-input inline" data-answer="Are" data-aliases="are" autocomplete="off" spellcheck="false"> you a student?</p>
+            <p><span class="speaker">Jess:</span> Yes, I <input class="answer-input inline" data-answer="am" autocomplete="off" spellcheck="false"> . Sofia <input class="answer-input inline" data-answer="'s" data-aliases="s|is" autocomplete="off" spellcheck="false"> the teacher.</p>
+          </div>
+          <div class="conversation">
+            <p><span class="speaker">Tom:</span> <input class="answer-input inline" data-answer="Is" data-aliases="is" autocomplete="off" spellcheck="false"> Sydney the capital of Australia?</p>
+            <p><span class="speaker">Kurt:</span> No, it <input class="answer-input inline" data-answer="isn't" data-aliases="isnt|is not|isnot" autocomplete="off" spellcheck="false"> . The capital <input class="answer-input inline" data-answer="'s" data-aliases="s|is" autocomplete="off" spellcheck="false"> Canberra.</p>
+          </div>
+          <div class="conversation">
+            <p><span class="speaker">Alison:</span> <input class="answer-input inline" data-answer="Are" data-aliases="are" autocomplete="off" spellcheck="false"> Craig and Adam brothers?</p>
+            <p><span class="speaker">Phil:</span> No, they <input class="answer-input inline" data-answer="aren't" data-aliases="arent|are not|arenot" autocomplete="off" spellcheck="false"> . They <input class="answer-input inline" data-answer="'re" data-aliases="re|are|they're|they are" autocomplete="off" spellcheck="false"> friends from university.</p>
+          </div>
+          <div class="task-footer">
+            <button class="btn ghost" type="button" data-reset="gb-pronouns-1">Reset</button>
+          </div>
+        </div>
+      </details>
+
+      <!-- 2. object pronouns — Replace bold words -->
+      <details class="task" data-task="gb-obj-pronouns-1" data-type="input">
+        <summary>
+          <span class="task-eye"><svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></span>
+          <span class="task-meta">
+            <span class="task-title">Object pronouns &amp; possessive adjectives &mdash; 1</span>
+            <span class="task-subtitle">Replace the bold words with the correct object pronoun.</span>
+          </span>
+          <span class="task-status" data-task-status="gb-obj-pronouns-1"></span>
+        </summary>
+        <div class="task-body">
+          <p class="task-instruction">Replace the words in <strong>bold</strong> with the correct object pronoun (<em>me, you, him, her, it, us, them</em>).</p>
+          <ol class="sentence-list">
+            <li>Listen to <span class="bold-word">the woman</span>. <span class="arrow-sep">&rarr;</span> <input class="answer-input inline" data-answer="her" autocomplete="off" spellcheck="false"></li>
+            <li>Meet <span class="bold-word">me and Scott</span>. <span class="arrow-sep">&rarr;</span> <input class="answer-input inline" data-answer="us" autocomplete="off" spellcheck="false"></li>
+            <li>Look at <span class="bold-word">the photo</span>. <span class="arrow-sep">&rarr;</span> <input class="answer-input inline" data-answer="it" autocomplete="off" spellcheck="false"></li>
+            <li>Read <span class="bold-word">the instructions</span>. <span class="arrow-sep">&rarr;</span> <input class="answer-input inline" data-answer="them" autocomplete="off" spellcheck="false"></li>
+            <li>Study with <span class="bold-word">your sister</span>. <span class="arrow-sep">&rarr;</span> <input class="answer-input inline" data-answer="her" autocomplete="off" spellcheck="false"></li>
+            <li>Open <span class="bold-word">the two doors</span>. <span class="arrow-sep">&rarr;</span> <input class="answer-input inline" data-answer="them" autocomplete="off" spellcheck="false"></li>
+            <li>I don't know <span class="bold-word">your parents</span>. <span class="arrow-sep">&rarr;</span> <input class="answer-input inline" data-answer="them" autocomplete="off" spellcheck="false"></li>
+            <li>Come with <span class="bold-word">me and the other students</span>. <span class="arrow-sep">&rarr;</span> <input class="answer-input inline" data-answer="us" autocomplete="off" spellcheck="false"></li>
+            <li>Speak to <span class="bold-word">Mr Puskas</span>. <span class="arrow-sep">&rarr;</span> <input class="answer-input inline" data-answer="him" autocomplete="off" spellcheck="false"></li>
+            <li>Close <span class="bold-word">your book</span>. <span class="arrow-sep">&rarr;</span> <input class="answer-input inline" data-answer="it" autocomplete="off" spellcheck="false"></li>
+          </ol>
+          <div class="task-footer">
+            <button class="btn ghost" type="button" data-reset="gb-obj-pronouns-1">Reset</button>
+          </div>
+        </div>
+      </details>
+
+      <!-- 3. object pronouns — Choose correct word -->
+      <details class="task" data-task="gb-obj-pronouns-2" data-type="choice">
+        <summary>
+          <span class="task-eye"><svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></span>
+          <span class="task-meta">
+            <span class="task-title">Object pronouns &amp; possessive adjectives &mdash; 2</span>
+            <span class="task-subtitle">Choose the correct word to complete each sentence.</span>
+          </span>
+          <span class="task-status" data-task-status="gb-obj-pronouns-2"></span>
+        </summary>
+        <div class="task-body">
+          <p class="task-instruction">Choose the correct word to complete the sentences.</p>
+          <ol class="choice-list">
+            <li><span class="num">1</span>
+              She's
+              <span class="choice-group">
+                <button class="choice-btn" type="button" data-correct="true">our</button>
+                <button class="choice-btn" type="button" data-correct="false">us</button>
+              </span>
+              teacher. Ask
+              <span class="choice-group">
+                <button class="choice-btn" type="button" data-correct="false">she</button>
+                <button class="choice-btn" type="button" data-correct="true">her</button>
+              </span>.
+            </li>
+            <li><span class="num">2</span>
+              We're at home tonight. Come and see
+              <span class="choice-group">
+                <button class="choice-btn" type="button" data-correct="true">us</button>
+                <button class="choice-btn" type="button" data-correct="false">our</button>
+              </span>!
+            </li>
+            <li><span class="num">3</span>
+              Here's
+              <span class="choice-group">
+                <button class="choice-btn" type="button" data-correct="false">me</button>
+                <button class="choice-btn" type="button" data-correct="true">my</button>
+              </span>
+              number. Phone
+              <span class="choice-group">
+                <button class="choice-btn" type="button" data-correct="true">me</button>
+                <button class="choice-btn" type="button" data-correct="false">my</button>
+              </span>.
+            </li>
+            <li><span class="num">4</span>
+              <span class="choice-group">
+                <button class="choice-btn" type="button" data-correct="true">They're</button>
+                <button class="choice-btn" type="button" data-correct="false">She's</button>
+              </span>
+              so beautiful! Look at
+              <span class="choice-group">
+                <button class="choice-btn" type="button" data-correct="true">them</button>
+                <button class="choice-btn" type="button" data-correct="false">their</button>
+              </span>!
+            </li>
+            <li><span class="num">5</span>
+              <span class="choice-group">
+                <button class="choice-btn" type="button" data-correct="false">She's</button>
+                <button class="choice-btn" type="button" data-correct="true">Her</button>
+              </span>
+              doll is in her room. Call
+              <span class="choice-group">
+                <button class="choice-btn" type="button" data-correct="false">him</button>
+                <button class="choice-btn" type="button" data-correct="true">her</button>
+              </span>.
+            </li>
+            <li><span class="num">6</span>
+              <span class="choice-group">
+                <button class="choice-btn" type="button" data-correct="true">It</button>
+                <button class="choice-btn" type="button" data-correct="false">Its</button>
+              </span>
+              isn't
+              <span class="choice-group">
+                <button class="choice-btn" type="button" data-correct="false">me</button>
+                <button class="choice-btn" type="button" data-correct="true">my</button>
+              </span>
+              dog. It's
+              <span class="choice-group">
+                <button class="choice-btn" type="button" data-correct="true">his</button>
+                <button class="choice-btn" type="button" data-correct="false">he</button>
+              </span>
+              dog.
+            </li>
+          </ol>
+          <div class="task-footer">
+            <button class="btn ghost" type="button" data-reset="gb-obj-pronouns-2">Reset</button>
+          </div>
+        </div>
+      </details>
+
+      <!-- 4. question words — Write questions -->
+      <details class="task" data-task="gb-question-words-1" data-type="input">
+        <summary>
+          <span class="task-eye"><svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></span>
+          <span class="task-meta">
+            <span class="task-title">Question words &mdash; 1</span>
+            <span class="task-subtitle">Write the question for each answer using <em>What, Who, Where, When, How, Why</em>.</span>
+          </span>
+          <span class="task-status" data-task-status="gb-question-words-1"></span>
+        </summary>
+        <div class="task-body">
+          <p class="task-instruction">Look at the answers in bold and write the questions. Use the words in the box and <em>be</em>.</p>
+          <div class="dd-bank" style="border-style:dashed; cursor:default;">
+            <span class="dd-word example-bank">What</span>
+            <span class="dd-word example-bank">Who</span>
+            <span class="dd-word example-bank">Where</span>
+            <span class="dd-word example-bank">When</span>
+            <span class="dd-word example-bank">How</span>
+            <span class="dd-word example-bank">Why</span>
+          </div>
+          <ol class="sentence-list">
+            <li><strong>What's your name?</strong> &mdash; My name's <span class="bold-word">Ryan</span>. <span class="prompt-words">(example)</span></li>
+            <li><input class="answer-input inline xwide" data-answer="Where's Christina?" data-aliases="where is christina|wheres christina|where is christina?|wheres christina?" autocomplete="off" spellcheck="false"> <span class="arrow-sep">&mdash;</span> Christina's <span class="bold-word">at work</span>.</li>
+            <li><input class="answer-input inline xwide" data-answer="How are your mother and father?" data-aliases="how are your mother and father|how are mother and father?|how are mother and father" autocomplete="off" spellcheck="false"> <span class="arrow-sep">&mdash;</span> My mother and father are <span class="bold-word">well</span>, thank you.</li>
+            <li><input class="answer-input inline xwide" data-answer="When's lunch?" data-aliases="when is lunch|whens lunch|when is lunch?|whens lunch?" autocomplete="off" spellcheck="false"> <span class="arrow-sep">&mdash;</span> Lunch is <span class="bold-word">at 5 p.m.</span></li>
+            <li><input class="answer-input inline xwide" data-answer="Who's our doctor?" data-aliases="who is our doctor|whos our doctor|who is our doctor?|whos our doctor?" autocomplete="off" spellcheck="false"> <span class="arrow-sep">&mdash;</span> Our doctor is <span class="bold-word">Dr Kapoor</span>.</li>
+            <li><input class="answer-input inline xwide" data-answer="Why are Gustavo and Julia here?" data-aliases="why are gustavo and julia here|why are gustavo and julia here?" autocomplete="off" spellcheck="false"> <span class="arrow-sep">&mdash;</span> Gustavo and Julia are here <span class="bold-word">because they're my friends</span>.</li>
+          </ol>
+          <div class="task-footer">
+            <button class="btn ghost" type="button" data-reset="gb-question-words-1">Reset</button>
+          </div>
+        </div>
+      </details>
+
+    </div>
+
+    <div class="lesson-finale" id="lessonFinale">
+      <h2>Lesson complete!</h2>
+      <p>All <span id="finaleCount">14</span> tasks finished. Click "Reset all" in the header to try again.</p>
+    </div>
+
+  </div>
+
+<script>
+  // ============ STATE ============
+  const TOTAL_TASKS = document.querySelectorAll('details.task').length;
+  const taskState = {};
+
+  function markComplete(taskId) {
+    if (taskState[taskId]) return;
+    taskState[taskId] = true;
+    const status = document.querySelector(`[data-task-status="${taskId}"]`);
+    if (status) status.classList.add('complete');
+    const cel = document.querySelector(`details[data-task="${taskId}"] .celebration`);
+    if (cel) cel.classList.add('show');
+    updateProgress();
+  }
+
+  function unmarkComplete(taskId) {
+    if (!taskState[taskId]) return;
+    delete taskState[taskId];
+    const status = document.querySelector(`[data-task-status="${taskId}"]`);
+    if (status) status.classList.remove('complete');
+    const cel = document.querySelector(`details[data-task="${taskId}"] .celebration`);
+    if (cel) cel.classList.remove('show');
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const done = Object.keys(taskState).length;
+    const pill = document.getElementById('progressPill');
+    pill.textContent = `${done} / ${TOTAL_TASKS} done`;
+    pill.classList.toggle('all-done', done === TOTAL_TASKS);
+    document.getElementById('lessonFinale').classList.toggle('show', done === TOTAL_TASKS);
+  }
+
+  // ============ SHARED DRAG ============
+  let dragging = null, ghost = null, offsetX = 0, offsetY = 0;
+
+  function startDrag(el, e) {
+    if (el.classList.contains('placed') || el.classList.contains('example-bank')) return;
+    e.preventDefault();
+    dragging = el;
+    const rect = el.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    ghost = el.cloneNode(true);
+    ghost.classList.add('ghost');
+    ghost.style.left = rect.left + 'px';
+    ghost.style.top = rect.top + 'px';
+    ghost.style.width = rect.width + 'px';
+    document.body.appendChild(ghost);
+    el.classList.add('dragging');
+    try { el.setPointerCapture(e.pointerId); } catch (_) {}
+    el.addEventListener('pointermove', onMove);
+    el.addEventListener('pointerup', onUp);
+    el.addEventListener('pointercancel', onUp);
+  }
+
+  function onMove(e) {
+    if (!ghost) return;
+    ghost.style.left = (e.clientX - offsetX) + 'px';
+    ghost.style.top = (e.clientY - offsetY) + 'px';
+    document.querySelectorAll('.dd-zone, .blank').forEach(z => z.classList.remove('hover'));
+    const zone = getZoneAt(e.clientX, e.clientY);
+    if (zone) zone.classList.add('hover');
+  }
+
+  function onUp(e) {
+    if (!dragging) return;
+    const el = dragging;
+    el.removeEventListener('pointermove', onMove);
+    el.removeEventListener('pointerup', onUp);
+    el.removeEventListener('pointercancel', onUp);
+
+    const zone = getZoneAt(e.clientX, e.clientY);
+    document.querySelectorAll('.dd-zone, .blank').forEach(z => z.classList.remove('hover'));
+    if (ghost) { ghost.remove(); ghost = null; }
+    el.classList.remove('dragging');
+
+    if (zone) handleDrop(el, zone);
+    dragging = null;
+  }
+
+  function getZoneAt(x, y) {
+    const els = document.elementsFromPoint(x, y);
+    return els.find(el => el.classList && (el.classList.contains('dd-zone') || el.classList.contains('blank')));
+  }
+
+  function handleDrop(el, zone) {
+    const accepts = (zone.dataset.accepts || '').split('|');
+    const value = el.dataset.value;
+    if (accepts.includes(value)) {
+      // For blank-type zones, only allow one word
+      if (zone.classList.contains('blank') && zone.children.length > 0) {
+        // already filled (shouldn't happen since .placed prevents re-drag, but safe)
+        flashWrong(el);
+        return;
+      }
+      zone.appendChild(el);
+      if (zone.classList.contains('blank')) {
+        zone.classList.add('filled');
+        const card = zone.closest('.photo-card');
+        if (card) card.classList.add('solved');
+      }
+      el.classList.add('placed');
+      checkTaskFromZone(zone);
+    } else {
+      flashWrong(el);
+    }
+  }
+
+  function flashWrong(el) {
+    el.classList.add('wrong-shake');
+    setTimeout(() => el.classList.remove('wrong-shake'), 480);
+  }
+
+  function checkTaskFromZone(zone) {
+    const task = zone.closest('details.task');
+    if (!task) return;
+    const id = task.dataset.task;
+    const required = countRequired(task);
+    const placed = task.querySelectorAll('.dd-word.placed').length;
+    if (placed === required) markComplete(id);
+  }
+
+  function countRequired(task) {
+    // A word counts as required only if its value matches some zone's data-accepts.
+    // That lets the bank hold extra distractor words (e.g. his, them in pronouns).
+    const accepts = new Set();
+    task.querySelectorAll('.dd-zone, .blank').forEach(z => {
+      (z.dataset.accepts || '').split('|').forEach(a => a && accepts.add(a));
+    });
+    let count = 0;
+    task.querySelectorAll('.dd-word:not(.example-bank):not(.example)').forEach(w => {
+      if (w.dataset.value && accepts.has(w.dataset.value)) count++;
+    });
+    return count;
+  }
+
+  function attachDrag(el) {
+    el.addEventListener('pointerdown', (e) => startDrag(el, e));
+  }
+
+  // ============ TASK INITIALIZERS ============
+
+  // --- 1A: words to categories ---
+  const VOCAB_1A_WORDS = [
+    { text: "17",       value: "numbers"   },
+    { text: "G",        value: "alphabet"  },
+    { text: "notebook", value: "objects"   },
+    { text: "purple",   value: "colours"   },
+    { text: "the UK",   value: "countries" },
+    { text: "Thursday", value: "days"      }
+  ];
+
+  function renderVocab1A() {
+    const bank = document.getElementById('bank-vocab-1a');
+    bank.innerHTML = '';
+    document.querySelectorAll('details[data-task="vocab-1a"] .dd-zone').forEach(z => z.innerHTML = '');
+    shuffle(VOCAB_1A_WORDS).forEach(w => {
+      const el = createWord(w.text, w.value);
+      bank.appendChild(el);
+    });
+  }
+
+  // --- Alphabet ---
+  const ALPHA_BANK = [
+    // group A (eɪ)
+    {t:'H', g:'A'}, {t:'J', g:'A'}, {t:'K', g:'A'},
+    // group B (iː)
+    {t:'C', g:'B'}, {t:'D', g:'B'}, {t:'E', g:'B'}, {t:'G', g:'B'}, {t:'P', g:'B'}, {t:'T', g:'B'}, {t:'V', g:'B'},
+    // group F (e)
+    {t:'L', g:'F'}, {t:'M', g:'F'}, {t:'N', g:'F'}, {t:'S', g:'F'}, {t:'X', g:'F'}, {t:'Z', g:'F'},
+    // group I (aɪ)
+    {t:'Y', g:'I'},
+    // group Q (uː)
+    {t:'U', g:'Q'}, {t:'W', g:'Q'}
+  ];
+  const ALPHA_EXAMPLES = {
+    A: 'A', B: 'B', F: 'F', I: 'I', O: 'O', Q: 'Q', R: 'R'
+  };
+
+  function renderAlphabet() {
+    const bank = document.getElementById('bank-alphabet');
+    bank.innerHTML = '';
+    document.querySelectorAll('details[data-task="alphabet"] .dd-zone').forEach(z => {
+      z.innerHTML = '';
+      const ex = ALPHA_EXAMPLES[z.dataset.accepts];
+      if (ex) {
+        const exEl = document.createElement('span');
+        exEl.className = 'dd-word example';
+        exEl.textContent = ex;
+        z.appendChild(exEl);
+      }
+    });
+    shuffle(ALPHA_BANK).forEach(w => {
+      const el = createWord(w.t, w.g);
+      bank.appendChild(el);
+    });
+  }
+
+  // --- Pronouns (grammar 2A) ---
+  const PRONOUN_WORDS = [
+    { text: "Her",     value: "Her",     used: true  },
+    { text: "He's",    value: "He's",    used: true  },
+    { text: "him",     value: "him",     used: true  },
+    { text: "his",     value: "his",     used: false },
+    { text: "It's",    value: "It's",    used: true  },
+    { text: "She's",   value: "She's",   used: true  },
+    { text: "them",    value: "them",    used: false },
+    { text: "They're", value: "They're", used: true  }
+  ];
+
+  function renderPronouns() {
+    const bank = document.getElementById('bank-pronouns');
+    bank.innerHTML = '';
+    document.querySelectorAll('details[data-task="pronouns"] .blank').forEach(b => {
+      b.innerHTML = '';
+      b.classList.remove('filled');
+    });
+    shuffle(PRONOUN_WORDS).forEach(w => {
+      const el = createWord(w.text, w.value);
+      bank.appendChild(el);
+    });
+  }
+
+  // --- Everyday objects: match 12 words to 12 photos ---
+  // Words are numbered 1-12 as in the textbook; data-value matches each photo card's data-accepts.
+  const OBJECTS_MATCH_WORDS = [
+    { text: "toothbrush",      value: "toothbrush"      },
+    { text: "tissues",         value: "tissues"         },
+    { text: "laptop",          value: "laptop"          },
+    { text: "purse",           value: "purse"           },
+    { text: "wallet",          value: "wallet"          },
+    { text: "stamps",          value: "stamps"          },
+    { text: "scissors",        value: "scissors"        },
+    { text: "file",            value: "file"            },
+    { text: "mobile",          value: "mobile"          },
+    { text: "driving licence", value: "driving licence" },
+    { text: "glasses",         value: "glasses"         },
+    { text: "ticket",          value: "ticket"          }
+  ];
+
+  function renderObjectsMatch() {
+    const bank = document.getElementById('bank-objects-match');
+    bank.innerHTML = '';
+    document.querySelectorAll('details[data-task="objects-match"] .blank').forEach(b => {
+      b.innerHTML = '';
+      b.classList.remove('filled');
+    });
+    document.querySelectorAll('details[data-task="objects-match"] .photo-card').forEach(c => c.classList.remove('solved'));
+    shuffle(OBJECTS_MATCH_WORDS).forEach(w => {
+      const el = createWord(w.text, w.value);
+      bank.appendChild(el);
+    });
+  }
+
+  // --- Classroom language ---
+  const CLASSROOM_WORDS = [
+    { text: "again",      value: "again"      },
+    { text: "How",        value: "How"        },
+    { text: "mean",       value: "__example__", example: true },
+    { text: "page",       value: "page"       },
+    { text: "understand", value: "understand" }
+  ];
+
+  function renderClassroom() {
+    const bank = document.getElementById('bank-classroom');
+    bank.innerHTML = '';
+    document.querySelectorAll('details[data-task="classroom"] .blank').forEach(b => {
+      b.innerHTML = '';
+      b.classList.remove('filled');
+    });
+    shuffle(CLASSROOM_WORDS).forEach(w => {
+      const el = createWord(w.text, w.value);
+      if (w.example) el.classList.add('example-bank');
+      bank.appendChild(el);
+    });
+  }
+
+  function createWord(text, value) {
+    const el = document.createElement('span');
+    el.className = 'dd-word';
+    el.textContent = text;
+    el.dataset.value = value;
+    attachDrag(el);
+    return el;
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // ============ INPUT TASKS ============
+  function setupInputTasks() {
+    document.querySelectorAll('details[data-type="input"]').forEach(task => {
+      const id = task.dataset.task;
+      const inputs = task.querySelectorAll('.answer-input');
+      inputs.forEach(input => {
+        input.addEventListener('input', () => checkInput(input, false));
+        input.addEventListener('blur', () => checkInput(input, true));
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') { e.preventDefault(); checkInput(input, true); focusNext(input); }
+        });
+      });
+    });
+  }
+
+  function focusNext(input) {
+    const inputs = Array.from(input.closest('details').querySelectorAll('.answer-input'));
+    const idx = inputs.indexOf(input);
+    for (let i = idx + 1; i < inputs.length; i++) {
+      if (!inputs[i].disabled) { inputs[i].focus(); return; }
+    }
+  }
+
+  function checkInput(input, finalize) {
+    if (input.disabled) return;
+    const value = input.value.trim().toLowerCase();
+    if (!value) {
+      input.classList.remove('correct', 'error');
+      return;
+    }
+    const expected = (input.dataset.answer || '').toLowerCase();
+    const aliases = (input.dataset.aliases || '').toLowerCase().split('|').filter(Boolean);
+    const ok = value === expected || aliases.includes(value);
+    if (ok) {
+      input.classList.remove('error');
+      input.classList.add('correct');
+      input.disabled = true;
+      input.value = input.dataset.answer; // canonical capitalization
+      checkInputTaskComplete(input.closest('details'));
+    } else if (finalize) {
+      input.classList.add('error');
+      setTimeout(() => input.classList.remove('error'), 600);
+    }
+  }
+
+  function checkInputTaskComplete(task) {
+    const inputs = task.querySelectorAll('.answer-input');
+    const allCorrect = Array.from(inputs).every(i => i.classList.contains('correct'));
+    if (allCorrect) markComplete(task.dataset.task);
+  }
+
+  // ============ CHOICE TASKS ============
+  function setupChoiceTasks() {
+    document.querySelectorAll('details[data-type="choice"]').forEach(task => {
+      const id = task.dataset.task;
+      const groups = task.querySelectorAll('.choice-group');
+      groups.forEach(group => {
+        const buttons = group.querySelectorAll('.choice-btn');
+        buttons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (group.classList.contains('solved')) return;
+            if (btn.dataset.correct === 'true') {
+              btn.classList.add('correct');
+              group.classList.add('solved');
+              buttons.forEach(b => b.disabled = true);
+              checkChoiceTaskComplete(task);
+            } else {
+              btn.classList.add('wrong');
+              setTimeout(() => btn.classList.remove('wrong'), 600);
+            }
+          });
+        });
+      });
+    });
+  }
+
+  function checkChoiceTaskComplete(task) {
+    const groups = task.querySelectorAll('.choice-group');
+    const allSolved = Array.from(groups).every(g => g.classList.contains('solved'));
+    if (allSolved) markComplete(task.dataset.task);
+  }
+
+  // ============ RESET ============
+  function resetTask(taskId) {
+    const task = document.querySelector(`details[data-task="${taskId}"]`);
+    if (!task) return;
+    unmarkComplete(taskId);
+
+    const type = task.dataset.type;
+    if (type === 'drag-categories' || type === 'drag-blanks') {
+      // re-render
+      switch(taskId) {
+        case 'vocab-1a': renderVocab1A(); break;
+        case 'alphabet': renderAlphabet(); break;
+        case 'pronouns': renderPronouns(); break;
+        case 'classroom': renderClassroom(); break;
+        case 'objects-match': renderObjectsMatch(); break;
+      }
+    } else if (type === 'input') {
+      task.querySelectorAll('.answer-input').forEach(input => {
+        input.value = '';
+        input.disabled = false;
+        input.classList.remove('correct', 'error');
+      });
+    } else if (type === 'choice') {
+      task.querySelectorAll('.choice-group').forEach(group => {
+        group.classList.remove('solved');
+        group.querySelectorAll('.choice-btn').forEach(b => {
+          b.disabled = false;
+          b.classList.remove('correct', 'wrong');
+        });
+      });
+    }
+  }
+
+  function setupResetButtons() {
+    document.querySelectorAll('[data-reset]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        resetTask(btn.dataset.reset);
+      });
+    });
+  }
+
+  // ============ HEADER CONTROLS ============
+  function setupHeaderControls() {
+    const expandBtn = document.getElementById('expandAllBtn');
+    expandBtn.addEventListener('click', () => {
+      const allOpen = Array.from(document.querySelectorAll('details.task')).every(d => d.open);
+      document.querySelectorAll('details.task').forEach(d => d.open = !allOpen);
+      expandBtn.textContent = allOpen ? 'Expand all' : 'Collapse all';
+    });
+
+    document.getElementById('resetAllBtn').addEventListener('click', () => {
+      document.querySelectorAll('details.task').forEach(d => {
+        resetTask(d.dataset.task);
+      });
+    });
+  }
+
+  // ============ INIT ============
+  renderVocab1A();
+  renderAlphabet();
+  renderPronouns();
+  renderClassroom();
+  renderObjectsMatch();
+  setupInputTasks();
+  setupChoiceTasks();
+  setupResetButtons();
+  setupHeaderControls();
+  // Sync hardcoded counters with actual number of tasks (handles future task additions).
+  const finaleCount = document.getElementById('finaleCount');
+  if (finaleCount) finaleCount.textContent = TOTAL_TASKS;
+  updateProgress();
+</script>
+<script defer src="tracker.js"></script>
+</body>
+</html>

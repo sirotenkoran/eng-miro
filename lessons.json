@@ -1,0 +1,10 @@
+{
+  "lessons": [
+    {
+      "id": "lead-in",
+      "title": "Lead-in",
+      "file": "lead-in.html",
+      "description": "Numbers, alphabet, colours, days, classroom objects."
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eng Lessons</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <script src="https://miro.com/app/static/sdk/v2/miro.js"></script>
+</head>
+<body>
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="lesson">Lesson</button>
+    <button class="tab" data-tab="dashboard">Dashboard</button>
+  </nav>
+
+  <main>
+    <section id="tab-lesson" class="tab-pane active">
+      <div id="lesson-empty" class="empty hidden"></div>
+      <div id="lesson-picker" class="picker hidden">
+        <h3>Add a lesson to the board</h3>
+        <p class="muted">Pick a lesson — a card appears on the board. Students click it to open the exercise here.</p>
+        <ul id="picker-list"></ul>
+      </div>
+      <iframe id="lesson-frame" title="Lesson"></iframe>
+    </section>
+
+    <section id="tab-dashboard" class="tab-pane">
+      <header class="dash-header">
+        <h2>Class progress</h2>
+        <button id="refresh-btn" type="button">Refresh</button>
+      </header>
+      <div id="dashboard-content">Loading…</div>
+      <div id="dashboard-settings" class="settings hidden">
+        <label>
+          <input type="checkbox" id="share-toggle">
+          Show progress to students
+        </label>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="panel.js"></script>
+</body>
+</html>

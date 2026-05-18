@@ -1,0 +1,19 @@
+{
+  "_comment": "Reference manifest for the Miro app. Miro v2 apps are configured in the developer dashboard (https://developers.miro.com/) — this file is a template to copy values from, not a runtime artefact.",
+  "appName": "Eng Lessons",
+  "sdkVersion": "SDK_V2",
+  "sdkUri": "https://<USER>.github.io/<REPO>/app.js",
+  "redirectUris": [
+    "https://<USER>.github.io/<REPO>/oauth-callback.html"
+  ],
+  "scopes": [
+    "boards:read",
+    "boards:write"
+  ],
+  "iconUrl": "https://<USER>.github.io/<REPO>/icon.svg",
+  "boardPicker": false,
+  "events": [
+    "icon:click",
+    "app_card:open"
+  ]
+}
