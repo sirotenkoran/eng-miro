@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eng Lessons — Miro App</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 20px; color: #1a1a1a; line-height: 1.5; }
+    h1 { margin-top: 0; }
+    code { background: #f3f3f5; padding: 1px 6px; border-radius: 4px; font-size: 0.95em; }
+    .ok { color: #167e3a; }
+    .muted { color: #666; }
+    a { color: #2b56e0; }
+    .install-box { background: #f3f3f5; padding: 14px 18px; border-radius: 8px; margin: 18px 0; }
+  </style>
+</head>
+<body>
+  <h1>Eng Lessons — Miro App</h1>
+  <p>Static host for the Miro side-panel app that wraps interactive Speakout A2 English lessons.</p>
+
+  <div id="callback-status"></div>
+
+  <h2>Endpoints</h2>
+  <ul>
+    <li><a href="app.js"><code>/app.js</code></a> — SDK URI (registered in Miro Developer Dashboard)</li>
+    <li><a href="panel.html"><code>/panel.html</code></a> — side panel UI (opened by Miro)</li>
+    <li><a href="lead-in.html"><code>/lead-in.html</code></a> — the lesson itself (standalone-capable)</li>
+    <li><a href="lessons.json"><code>/lessons.json</code></a> — lesson catalogue</li>
+  </ul>
+
+  <h2>Repository</h2>
+  <p><a href="https://github.com/sirotenkoran/eng-miro">github.com/sirotenkoran/eng-miro</a></p>
+
+  <p class="muted">If you landed here after installing the app in Miro, that's expected — close this tab and go back to your Miro board.</p>
+
+  <script>
+    // If Miro redirects here with an OAuth code or error, surface it so we know.
+    (function () {
+      var p = new URLSearchParams(window.location.search);
+      var status = document.getElementById('callback-status');
+      if (p.has('code')) {
+        status.className = 'install-box';
+        status.innerHTML = '<strong class="ok">Install handshake received.</strong> ' +
+          'Miro returned an OAuth <code>code</code>. For the Web-SDK panel app there is nothing to exchange on the client — you can safely close this tab and reload your Miro board.';
+      } else if (p.has('error')) {
+        status.className = 'install-box';
+        status.innerHTML = '<strong>Install error.</strong> Miro returned: <code>' +
+          (p.get('error') || '') + '</code> — <code>' + (p.get('error_description') || '') + '</code>';
+      }
+    })();
+  </script>
+</body>
+</html>
